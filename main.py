@@ -1,3 +1,10 @@
+'''
+this was made by Saviorizm
+Goals - reduce opacity of turtle fill to show colors beneath
+
+'''
+
+
 import turtle
 from random import randint
 from settings import *
@@ -6,7 +13,7 @@ from ColabTurtlePlus.Turtle import *
 
 pen = turtle.Turtle()
 turtle.setup(WIDTH, HEIGHT)
-pen.initializeTurtle()
+# pen.initializeTurtle()
 
 
 
@@ -17,7 +24,8 @@ def draw_random_line(horizontal = False,vertical = False):
     pen.goto(randint(-WIDTH,WIDTH),HEIGHT)
     pen.begin_fill()
     pen.fillcolor(randint(1, 255)/255, randint(1, 255)/255, randint(1, 255)/255)
-    pen.fillopacity(.7)
+    # pen.fillcolor(r,g,b,a)
+    # pen.setfillopacity(45)
     xpos_one, ypos_one = pen.position()
     pen.pendown()
     pen.goto(randint(-WIDTH,WIDTH),-HEIGHT)
@@ -51,7 +59,7 @@ def draw_random_line(horizontal = False,vertical = False):
     pen.goto(-WIDTH,randint(-HEIGHT,HEIGHT))
     pen.begin_fill()
     pen.fillcolor(randint(1, 255)/255, randint(1, 255)/255, randint(1, 255)/255)
-    pen.fillopacity(.7)
+    # pen.setfillopacity(45)
     xpos_one, ypos_one = pen.position()
     pen.pendown()
     pen.goto(HEIGHT,randint(-HEIGHT,HEIGHT))
