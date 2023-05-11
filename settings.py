@@ -1,6 +1,9 @@
 WIDTH = 1000
 HEIGHT = 800
+FPS = 144
 r = 100
 g = 100
 b = 100
 a = 0.5
+
+COLOR_LIST = "RED", "YELLOW", "ORANGE", "GREEN", "BLUE", "PURPLE"

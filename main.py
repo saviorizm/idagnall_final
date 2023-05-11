@@ -1,97 +1,120 @@
+# file made by savior
 '''
-this was made by Saviorizm
-Goals - reduce opacity of turtle fill to show colors beneath
+Goals:
+[x] mirror cursor through the middle
+[x] mirror cursor 4 ways
+[ ] reset button that clears screen
+// or/and
+[ ] trailing disappearing
 
 '''
-
-
-import turtle
+import pygame
+import math
 from random import randint
 from settings import *
-from ColabTurtlePlus.Turtle import *
+
+# Initialize Pygame
+pygame.init()
+# Set the size of the window
+
+window = pygame.display.set_mode((WIDTH,HEIGHT))
+# Set the title of the window
+pygame.display.set_caption("Kaleidoscope Drawing")
+
+# Set up the clock to control the frame rate
+clock = pygame.time.Clock()
+
+# Set up the colors to use for drawing
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+# Set up the brush size
+BRUSH_SIZE = 5
+
+# Set up the drawing surface
+drawing_surface = pygame.Surface((1000,800))
+# Set up the current position of the mouse
+current_mouse_pos = (0, 0)
+# Set up the previous position of the mouse
+previous_mouse_pos = (0, 0)
+# Set up the flag for if the mouse button is held down
+mouse_button_down = False
+
+def mirror():
+     if mouse_button_down:
+        right2left = WIDTH - current_mouse_pos[0]
+        left2right = (WIDTH/2 - current_mouse_pos[0]) + WIDTH/2
+        bottom2top =  (HEIGHT - current_mouse_pos[1])
+        top2bottom = (HEIGHT/2 - current_mouse_pos[1] + HEIGHT/2)
+        drawingleft = current_mouse_pos[0] < WIDTH/2
+        drawingright = current_mouse_pos[0] > WIDTH/2
+        drawingtop = current_mouse_pos[1] < HEIGHT/2
+        drawingbottom = current_mouse_pos[1] > HEIGHT/2
+            
+        pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)), current_mouse_pos, BRUSH_SIZE)
+
+        # ---------------------------for drawing in the corners------------------------------
+        # drawing on top right
+        if drawingtop and drawingright:
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, top2bottom), BRUSH_SIZE)
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], top2bottom), BRUSH_SIZE)
+
+        # drawing on top left
+        if drawingtop and drawingleft:
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, top2bottom), BRUSH_SIZE)
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], top2bottom), BRUSH_SIZE)
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
+
+        # drawing on bottom right
+        if drawingbottom and drawingright:
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, bottom2top), BRUSH_SIZE)
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], bottom2top), BRUSH_SIZE)
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
+
+        # drawing on bottom left
+        if drawingbottom and drawingleft:
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, bottom2top), BRUSH_SIZE)
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
+            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], bottom2top), BRUSH_SIZE)
 
 
-pen = turtle.Turtle()
-turtle.setup(WIDTH, HEIGHT)
-# pen.initializeTurtle()
+        
+# Main game loop
+running = True
+while running:
+ # Handle events
+    for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_button_down = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                mouse_button_down = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    BRUSH_SIZE -= 1
+                elif event.key == pygame.K_UP:
+                    BRUSH_SIZE += 1
+                elif event.key == pygame.K_1:
+                    BRUSH_SIZE = 10
+                elif event.key == pygame.K_2:
+                    BRUSH_SIZE = 20
+                elif event.key == pygame.K_3:
+                    BRUSH_SIZE = 30
 
+ # Get the current position of the mouse
+    current_mouse_pos = pygame.mouse.get_pos()
 
+ # Draw on the drawing surface
+    mirror()
 
-def draw_random_line(horizontal = False,vertical = False): 
-  pen.speed(0) 
-  if horizontal:
-    pen.penup()
-    pen.goto(randint(-WIDTH,WIDTH),HEIGHT)
-    pen.begin_fill()
-    pen.fillcolor(randint(1, 255)/255, randint(1, 255)/255, randint(1, 255)/255)
-    # pen.fillcolor(r,g,b,a)
-    # pen.setfillopacity(45)
-    xpos_one, ypos_one = pen.position()
-    pen.pendown()
-    pen.goto(randint(-WIDTH,WIDTH),-HEIGHT)
-    xpos_two, ypos_two = pen.position()
-    
-    if xpos_one - WIDTH/2 > 0:
-      closer_top = "right"
-      print(closer_top)
-    else:
-      closer_top = "left"
-      print(closer_top)
+ # Clear the screen
+    window.fill(BLACK)
+ # Blit the drawing surface to the screen
+    window.blit(drawing_surface, (0, 0))
+ # Update the screen
+    pygame.display.update()
 
-    if xpos_two - WIDTH/2 > 0:
-      closer_bottom = "right"
-      print(closer_bottom)
-    else:
-      closer_bottom = "left"
-      print(closer_bottom)
-    if closer_top == "right":
-      pen.goto(WIDTH/2,-HEIGHT/2)
-      pen.goto(WIDTH/2,HEIGHT/2)
-      pen.end_fill()
-    if closer_top == "left":
-      pen.goto(-WIDTH/2,-HEIGHT/2)
-      pen.goto(-WIDTH/2,HEIGHT/2)
-      pen.end_fill()
-  
-
-  if vertical:
-    pen.penup()
-    pen.goto(-WIDTH,randint(-HEIGHT,HEIGHT))
-    pen.begin_fill()
-    pen.fillcolor(randint(1, 255)/255, randint(1, 255)/255, randint(1, 255)/255)
-    # pen.setfillopacity(45)
-    xpos_one, ypos_one = pen.position()
-    pen.pendown()
-    pen.goto(HEIGHT,randint(-HEIGHT,HEIGHT))
-    xpos_two, ypos_two = pen.position()
-
-    if ypos_one - HEIGHT/2 > 0:
-      closer_left = "top"
-      print(closer_left)
-    else:
-      closer_left = "bottom"
-      print(closer_left)
-
-    if ypos_two - HEIGHT/2 > 0:
-      closer_right = "top"
-      print(closer_right)
-    else:
-      closer_right = "bottom"
-      print(closer_right)
-    if closer_left == "top":
-      pen.goto(WIDTH/2,HEIGHT/2)
-      pen.goto(-WIDTH/2,HEIGHT/2)
-      pen.end_fill()
-    if closer_right == "bottom":
-      pen.goto(WIDTH/2,-HEIGHT/2)
-      pen.goto(-WIDTH/2,-HEIGHT/2)
-      pen.end_fill()
-
-for i in range(100):
-  draw_random_line(True)
-  # print("Horizontal line")
-for i in range(100):
-  draw_random_line(False, True)
-  # print("vertical line")
-
-turtle.done()
+ # Cap the frame rate
+clock.tick(FPS)
