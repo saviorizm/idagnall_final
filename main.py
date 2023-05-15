@@ -6,6 +6,8 @@ Goals:
 [ ] reset button that clears screen
 // or/and
 [ ] trailing disappearing
+[ ] single color mode
+[ ] 2 or 4 axis mode
 
 '''
 import pygame
@@ -27,9 +29,12 @@ clock = pygame.time.Clock()
 # Set up the colors to use for drawing
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+fourway = True
+
 
 # Set up the brush size
 BRUSH_SIZE = 5
+
 
 # Set up the drawing surface
 drawing_surface = pygame.Surface((1000,800))
@@ -55,35 +60,39 @@ def mirror():
 
         # ---------------------------for drawing in the corners------------------------------
         # drawing on top right
-        if drawingtop and drawingright:
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, top2bottom), BRUSH_SIZE)
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], top2bottom), BRUSH_SIZE)
+        if fourway:
+            if drawingtop and drawingright:
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, top2bottom), BRUSH_SIZE)
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], top2bottom), BRUSH_SIZE)
 
-        # drawing on top left
-        if drawingtop and drawingleft:
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, top2bottom), BRUSH_SIZE)
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], top2bottom), BRUSH_SIZE)
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
+            # drawing on top left
+            if drawingtop and drawingleft:
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, top2bottom), BRUSH_SIZE)
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], top2bottom), BRUSH_SIZE)
 
-        # drawing on bottom right
-        if drawingbottom and drawingright:
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, bottom2top), BRUSH_SIZE)
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], bottom2top), BRUSH_SIZE)
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
+            # drawing on bottom right
+            if drawingbottom and drawingright:
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, bottom2top), BRUSH_SIZE)
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], bottom2top), BRUSH_SIZE)
 
-        # drawing on bottom left
-        if drawingbottom and drawingleft:
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, bottom2top), BRUSH_SIZE)
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
-            pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], bottom2top), BRUSH_SIZE)
+            # drawing on bottom left
+            if drawingbottom and drawingleft:
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, bottom2top), BRUSH_SIZE)
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], bottom2top), BRUSH_SIZE)
+        if fourway == False:
+            if drawingright:
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
+            if drawingleft:
+                pygame.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
 
-
-        
 # Main game loop
 running = True
 while running:
- # Handle events
+ # handle events
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -94,19 +103,25 @@ while running:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
                     BRUSH_SIZE -= 1
-                elif event.key == pygame.K_UP:
-                    BRUSH_SIZE += 1
-                elif event.key == pygame.K_1:
-                    BRUSH_SIZE = 10
-                elif event.key == pygame.K_2:
-                    BRUSH_SIZE = 20
-                elif event.key == pygame.K_3:
-                    BRUSH_SIZE = 30
+                if event.key >= pygame.K_0 and event.key <= pygame.K_9:
+                    # Get the integer value from the key
+                    key_value = event.key - pygame.K_0
+                    # Update count
+                    count = key_value * 10
+                    BRUSH_SIZE = count
+                if event.key == pygame.K_c:
+                    drawing_surface.fill(BLACK)
+                if event.key == pygame.K_2 and pygame.K_LCTRL:
+                    fourway = False
+                if event.key == pygame.K_4 and pygame.K_LCTRL:
+                    fourway = True
+                if event.key == pygame.K_MINUS:
+                    zoom_out()
 
- # Get the current position of the mouse
+ # get the current position of the mouse
     current_mouse_pos = pygame.mouse.get_pos()
 
- # Draw on the drawing surface
+ # call mirror funciton
     mirror()
 
  # Clear the screen
@@ -118,3 +133,4 @@ while running:
 
  # Cap the frame rate
 clock.tick(FPS)
+
