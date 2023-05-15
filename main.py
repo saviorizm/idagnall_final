@@ -3,38 +3,41 @@
 Goals:
 [x] mirror cursor through the middle
 [x] mirror cursor 4 ways
-[ ] reset button that clears screen
+[x] reset button that clears screen
 // or/and
 [ ] trailing disappearing
 [ ] single color mode
-[ ] 2 or 4 axis mode
+[x[] 2 or 4 axis mode
+[x] controls screen
 
 '''
 import pygame
 import math
 from random import randint
 from settings import *
+import os
 
 # Initialize Pygame
 pygame.init()
 # Set the size of the window
-
 window = pygame.display.set_mode((WIDTH,HEIGHT))
 # Set the title of the window
 pygame.display.set_caption("Kaleidoscope Drawing")
-
 # Set up the clock to control the frame rate
 clock = pygame.time.Clock()
+# asset folders
+game_folder = os.path.dirname(__file__)
+img_folder = os.path.join(game_folder, "img")
+#  load images
+code_keybinds_image = pygame.image.load(os.path.join(img_folder, "code_keybinds.jpg")).convert()
+code_keybinds_rect = code_keybinds_image.get_rect()
 
-# Set up the colors to use for drawing
+# variables
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 fourway = True
-
-
-# Set up the brush size
 BRUSH_SIZE = 5
-
+show_keybinds = False
 
 # Set up the drawing surface
 drawing_surface = pygame.Surface((1000,800))
@@ -44,6 +47,9 @@ current_mouse_pos = (0, 0)
 previous_mouse_pos = (0, 0)
 # Set up the flag for if the mouse button is held down
 mouse_button_down = False
+def toggle_keybind_screen():
+    global show_keybinds
+    show_keybinds = not show_keybinds    
 
 def mirror():
      if mouse_button_down:
@@ -104,30 +110,32 @@ while running:
                 if event.key == pygame.K_DOWN:
                     BRUSH_SIZE -= 1
                 if event.key >= pygame.K_0 and event.key <= pygame.K_9:
-                    # Get the integer value from the key
                     key_value = event.key - pygame.K_0
-                    # Update count
                     count = key_value * 10
                     BRUSH_SIZE = count
                 if event.key == pygame.K_c:
                     drawing_surface.fill(BLACK)
-                if event.key == pygame.K_2 and pygame.K_LCTRL:
+                if event.key == pygame.K_t:
                     fourway = False
-                if event.key == pygame.K_4 and pygame.K_LCTRL:
-                    fourway = True
-                if event.key == pygame.K_MINUS:
-                    zoom_out()
+                if event.key == pygame.K_f:
+                        fourway = True
+                if event.key == pygame.K_ESCAPE:
+                    toggle_keybind_screen()
+                
 
  # get the current position of the mouse
     current_mouse_pos = pygame.mouse.get_pos()
 
  # call mirror funciton
     mirror()
+    # keybind_screen()
 
  # Clear the screen
     window.fill(BLACK)
  # Blit the drawing surface to the screen
     window.blit(drawing_surface, (0, 0))
+    if show_keybinds:
+        window.blit(code_keybinds_image, code_keybinds_rect)
  # Update the screen
     pygame.display.update()
 
