@@ -9,6 +9,12 @@ Goals:
 [ ] single color mode
 [x[] 2 or 4 axis mode
 [x] controls screen
+[x] music
+
+Sources;
+https://stackoverflow.com/questions/66309353/kaleidoscope-effect-using-python-and-opencv
+https://www.reddit.com/r/Python/comments/1yt56k/generate_kaleidoscope_effects/
+https://www.pygame.org/docs/ref/draw.html
 
 
 '''
@@ -23,7 +29,7 @@ pg.init()
 # Set the size of the window
 window = pg.display.set_mode((WIDTH,HEIGHT))
 # Set the title of the window
-pg.display.set_caption("Kaleidoscope Drawing")
+pg.display.set_caption("Kaleidoscopizm")
 # Set up the clock to control the frame rate
 clock = pg.time.Clock()
 # asset folders
@@ -45,6 +51,7 @@ fourway = True
 BRUSH_SIZE = 5
 show_keybinds = False
 start_time = time()
+erase = False
 
 # Set up the drawing surface
 drawing_surface = pg.Surface((1000,800))
@@ -54,100 +61,110 @@ current_mouse_pos = (0, 0)
 previous_mouse_pos = (0, 0)
 # Set up the flag for if the mouse button is held down
 mouse_button_down = False
-def toggle_keybind_screen():
-    global show_keybinds
-    show_keybinds = not show_keybinds    
+  
 
 def mirror():
-     if mouse_button_down:
+    if mouse_button_down:
         right2left = WIDTH - current_mouse_pos[0]
         left2right = (WIDTH/2 - current_mouse_pos[0]) + WIDTH/2
-        bottom2top =  (HEIGHT - current_mouse_pos[1])
+        bottom2top =  HEIGHT - current_mouse_pos[1]
         top2bottom = (HEIGHT/2 - current_mouse_pos[1] + HEIGHT/2)
         drawingleft = current_mouse_pos[0] < WIDTH/2
         drawingright = current_mouse_pos[0] > WIDTH/2
         drawingtop = current_mouse_pos[1] < HEIGHT/2
         drawingbottom = current_mouse_pos[1] > HEIGHT/2
-            
-        # draws directly where the player is
-        pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)), current_mouse_pos, BRUSH_SIZE)
-        # ---------------------------for drawing in the corners------------------------------
-        # if user drawing on top right
+        
+        color = (0, 0, 0)  
+        
+        # randomizes color if the user has not toggled erase
+        if not erase:
+            color = (randint(0, 255), randint(0, 255), randint(0, 255))
+        
+        # Draw circles at the current mouse position
+        pg.draw.circle(drawing_surface, color, current_mouse_pos, BRUSH_SIZE)
+        
+        # Draw circles in the mirrored positions
         if fourway:
             if drawingtop and drawingright:
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, top2bottom), BRUSH_SIZE)
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], top2bottom), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (right2left, top2bottom), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (right2left, current_mouse_pos[1]), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (current_mouse_pos[0], top2bottom), BRUSH_SIZE)
 
-            # if user drawing on top left
             if drawingtop and drawingleft:
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, top2bottom), BRUSH_SIZE)
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], top2bottom), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (left2right, top2bottom), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (left2right, current_mouse_pos[1]), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (current_mouse_pos[0], top2bottom), BRUSH_SIZE)
 
-            # if user drawing on bottom right
             if drawingbottom and drawingright:
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, bottom2top), BRUSH_SIZE)
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], bottom2top), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (right2left, bottom2top), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (right2left, current_mouse_pos[1]), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (current_mouse_pos[0], bottom2top), BRUSH_SIZE)
 
-            # if user drawing on bottom left
             if drawingbottom and drawingleft:
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, bottom2top), BRUSH_SIZE)
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(current_mouse_pos[0], bottom2top), BRUSH_SIZE)
-        if fourway == False:
+                pg.draw.circle(drawing_surface, color, (left2right, bottom2top), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (left2right, current_mouse_pos[1]), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (current_mouse_pos[0], bottom2top), BRUSH_SIZE)
+        else:
             if drawingright:
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(right2left, current_mouse_pos[1]), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (right2left, current_mouse_pos[1]), BRUSH_SIZE)
             if drawingleft:
-                pg.draw.circle(drawing_surface, (randint(0,255),randint(0,255),randint(0,255)),(left2right, current_mouse_pos[1]), BRUSH_SIZE)
+                pg.draw.circle(drawing_surface, color, (left2right, current_mouse_pos[1]), BRUSH_SIZE)
+
 
 # Main game loop
 running = True
 while running:
     running_time = time() - start_time
-    if running_time < 4.0:
+    if running_time < 6.0:
         window.blit(code_keybinds_image, code_keybinds_rect)
+        pg.display.update()  # Update the screen to display the image
     else:
         show_keybinds = False
- # handle events
+    
+    # handle events
         for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    running = False
-                elif event.type == pg.MOUSEBUTTONDOWN:
-                    mouse_button_down = True
-                elif event.type == pg.MOUSEBUTTONUP:
-                    mouse_button_down = False
-                elif event.type == pg.KEYDOWN:
-                    if event.key == pg.K_DOWN:
-                        BRUSH_SIZE -= 1
-                    if event.key >= pg.K_0 and event.key <= pg.K_9:
-                        key_value = event.key - pg.K_0
-                        count = key_value * 10
-                        BRUSH_SIZE = count
-                    if event.key == pg.K_c:
-                        drawing_surface.fill(BLACK)
-                    if event.key == pg.K_t:
-                        fourway = False
-                    if event.key == pg.K_f:
-                            fourway = True
-                    if event.key == pg.K_ESCAPE:
-                        toggle_keybind_screen()
-                
- # get the current position of the mouse
+            if event.type == pg.QUIT:
+                running = False
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                mouse_button_down = True
+            elif event.type == pg.MOUSEBUTTONUP:
+                mouse_button_down = False
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_DOWN:
+                    BRUSH_SIZE -= 1
+                if event.key >= pg.K_0 and event.key <= pg.K_9:
+                    key_value = event.key - pg.K_0
+                    count = key_value * 10
+                    BRUSH_SIZE = count
+                if event.key == pg.K_c:
+                    drawing_surface.fill(BLACK)
+                if event.key == pg.K_t:
+                    fourway = False
+                if event.key == pg.K_f:
+                    fourway = True
+                if event.key == pg.K_ESCAPE:
+                    show_keybinds = not show_keybinds
+                if event.key == pg.K_e:
+                    erase = not erase
+
+        # get the current position of the mouse
         current_mouse_pos = pg.mouse.get_pos()
- # call mirror funciton
+
+        # call mirror function
         mirror()
- # Clear the screen
+
+        # Clear the screen
         window.fill(BLACK)
- # Blit the drawing surface to the screen
+
+        # blit the drawing surface to the screen
         window.blit(drawing_surface, (0, 0))
-# keybind_screen()
+
+        # Toggle the keybind screen if needed
         if show_keybinds:
             window.blit(code_keybinds_image, code_keybinds_rect)
- # Update the screen
+    
+    # Update the screen
     pg.display.update()
 
- # Cap the frame rate
-clock.tick(FPS)
-
+    # Cap the frame rate
+    clock.tick(FPS)
